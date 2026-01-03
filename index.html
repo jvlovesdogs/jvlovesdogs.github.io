@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>juanavaleria · jv</title>
+
+  <style>
+    :root{
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color-scheme: light;
+
+      /* responsive banner sizing */
+      --banner-h: clamp(42px, 9vh, 80px);
+      --banner-pad: clamp(8px, 1.6vw, 14px);
+      --ascii-size: clamp(13px, 1.8vw, 20px);
+      --stroke: clamp(0.9px, 0.14vw, 1.2px);
+      --noise-url: none;
+      --noise-x: 0px;
+      --noise-y: 0px;
+    }
+
+    *, *::before, *::after{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100dvh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:#0b0b0b;
+    }
+
+    .card{
+      width:min(980px, 92vw);
+      height:clamp(420px, 78vh, 600px);
+      background:#f4f4f4;
+      border:1px solid #222;
+      box-shadow:0 20px 60px rgba(0,0,0,0.35);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      position:relative;
+      z-index:2;
+    }
+
+    .inner{
+      flex:1;
+      overflow:auto;
+      padding:clamp(28px, 6vw, 42px) clamp(24px, 6vw, 52px) clamp(18px, 5vw, 28px);
+      display:grid;
+      grid-template-columns:minmax(170px, 320px) 1fr;
+      grid-template-rows:auto 1fr;
+      gap:clamp(14px, 3vw, 24px);
+    }
+
+    .inner.hasOpen .menu{ opacity:1; }
+
+    /* MENU */
+    .menu{
+      margin:0;
+      padding:6px 0 0;
+      list-style:none;
+      grid-column:1;
+      grid-row:1 / span 2;
+      transition:opacity 200ms ease;
+    }
+
+    .menu li{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .menu button{
+      appearance:none;
+      border:0;
+      background:transparent;
+      border:2px solid transparent;
+      font-size:clamp(24px, 4.8vw, 46px);
+      font-weight:700;
+      letter-spacing:-0.02em;
+      cursor:pointer;
+      color:#0b0b0b;
+      padding:6px 12px;
+      border-radius:14px;
+      transition:
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease;
+    }
+
+    .sq{
+      flex:0 0 12px;
+      width:12px;
+      height:12px;
+      border:1.5px solid #0b0b0b;
+      transform:none;
+      transition:background 160ms ease;
+    }
+
+    .menu li:hover .sq,
+    .menu li.active .sq{
+      background:#0b0b0b;
+    }
+
+    .arrow{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      width:100%;
+      margin-bottom:16px;
+      gap:8px;
+      position:relative;
+    }
+
+    .arrow .bubble{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:18px;
+      height:18px;
+      border:1.5px solid #0b0b0b;
+      border-radius:50%;
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:-0.02em;
+      transform:translateY(2px);
+      transition:opacity 140ms ease;
+      position:absolute;
+      right:0;
+      top:50%;
+      transform:translateY(-50%);
+    }
+
+    .arrow .label{
+      display:inline-block;
+      font-size:clamp(24px, 4.8vw, 46px);
+      font-weight:700;
+      letter-spacing:-0.02em;
+      visibility:hidden;
+      opacity:0;
+      transition:opacity 140ms ease;
+      position:absolute;
+      right:26px;
+      top:50%;
+      transform:translateY(-50%);
+      pointer-events:none;
+    }
+
+    .arrow .arr{
+      opacity:0;
+      visibility:hidden;
+    }
+    .arrow .star{
+      opacity:1;
+      visibility:visible;
+    }
+
+    .arrow.active .star{
+      opacity:0;
+      visibility:hidden;
+    }
+    .arrow.active .arr{
+      opacity:1;
+      visibility:visible;
+    }
+    .arrow.active .label{
+      visibility:visible;
+      opacity:1;
+    }
+
+    @media (max-width: 780px){
+      .arrow{
+        justify-content:center;
+      }
+      .arrow .label{
+        right:auto;
+        left:50%;
+        transform:translate(-50%, -50%);
+      }
+    }
+
+    .menu li.active button{
+      border-color:#0b0b0b;
+      background:transparent;
+      transform:translateY(-1px);
+    }
+
+    /* HEADER MARK */
+    .mark{
+      grid-column:2;
+      grid-row:1;
+      align-self:start;
+      padding-top:2px;
+      justify-self:end;
+      text-align:right;
+      color:#0b0b0b;
+      user-select:none;
+      position:relative;
+    }
+
+    .mark .name{
+      font-size:clamp(28px, 5vw, 40px);
+      font-weight:700;
+      line-height:0.95;
+      transition:opacity 40ms linear;
+    }
+
+    .mark .sub{
+      font-size:clamp(26px, 4.6vw, 38px);
+      font-weight:700;
+      line-height:0.92;
+      transition:opacity 40ms linear;
+    }
+
+    .mark-svg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:none;
+      pointer-events:none;
+    }
+
+    .mark.show-svg .name,
+    .mark.show-svg .sub{
+      opacity:0;
+    }
+
+    /* CONTENT */
+    .panelArea{
+      grid-column:2;
+      grid-row:2;
+      position:relative;
+      min-height:clamp(160px, 32vh, 260px);
+      overflow:auto;
+      padding-top:4px;
+    }
+
+    .panel{
+      position:relative;
+      opacity:0;
+      transform:translateY(8px);
+      padding:0;
+      transition:
+        opacity 160ms ease-out,
+        transform 180ms ease-out;
+      pointer-events:none;
+      display:none;
+      color:#0b0b0b;
+    }
+
+    .panel.open{
+      opacity:1;
+      transform:translateY(0);
+      pointer-events:auto;
+      display:block;
+    }
+
+    .panel p{
+      margin:0;
+      font-size:16px;
+      line-height:1.45;
+      text-align:right;
+      background:#0b0b0b;
+      color:#f4f4f4;
+    }
+
+    .paperLinks{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:14px;
+      width:100%;
+    }
+
+    .paperCard{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:6px;
+      padding:12px 16px;
+      border:1.5px solid #0b0b0b;
+      border-radius:14px;
+      text-decoration:none;
+      color:#0b0b0b;
+      background:linear-gradient(145deg, #f9f9f9, #e8e8e8);
+      box-shadow:0 6px 18px rgba(0,0,0,0.14);
+      width:100%;
+      word-break:break-word;
+      hyphens:auto;
+      transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        background-color 140ms ease;
+    }
+
+    .paperCard:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 26px rgba(0,0,0,0.18);
+      background:#fff;
+    }
+
+    .paperCard .title{
+      font-weight:700;
+      letter-spacing:-0.01em;
+    }
+
+    .paperCard .meta{
+      font-size:14px;
+      font-weight:500;
+      letter-spacing:0.01em;
+      opacity:0.9;
+    }
+
+    .musicShowcase{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      margin-top:4px;
+    }
+
+    .musicGroupTitle{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      letter-spacing:0.08em;
+      text-transform:lowercase;
+      font-weight:700;
+      color:#0b0b0b;
+      opacity:1;
+      margin-bottom:10px;
+    }
+
+    .musicGroupTitle::before,
+    .musicGroupTitle::after{
+      content:"";
+      width:6px;
+      height:6px;
+      border:1px solid #0b0b0b;
+      border-radius:50%;
+      transition:background-color 140ms ease, transform 140ms ease;
+    }
+
+    .musicGroup:hover .musicGroupTitle::before,
+    .musicGroup:hover .musicGroupTitle::after{
+      background-color:#0b0b0b;
+      transform:scale(1.05);
+    }
+
+    .musicGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));
+      gap:4px;
+    }
+
+    .musicItem{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:3px;
+      padding:2px;
+      text-decoration:none;
+      color:#0b0b0b;
+      transition:
+        transform 140ms ease,
+        box-shadow 140ms ease;
+      word-break:break-word;
+      hyphens:auto;
+    }
+
+    .musicItem:hover{
+      transform:translateY(-1px);
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .musicCover{
+      width:76px;
+      height:76px;
+      border-radius:4px;
+      overflow:hidden;
+      border:1px solid #0b0b0b;
+      box-shadow:0 4px 8px rgba(0,0,0,0.12);
+      background:linear-gradient(120deg, #1a1a1a, #3a3a3a);
+    }
+
+    .musicCover img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .musicItem .title{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      font-weight:700;
+      letter-spacing:-0.01em;
+      text-align:center;
+      font-size:11px;
+      line-height:1.15;
+    }
+
+    .musicItem .title-label{
+      font-size:10px;
+      letter-spacing:0.02em;
+    }
+
+    .musicItem .meta{
+      font-size:14px;
+      font-weight:500;
+      letter-spacing:0.01em;
+      opacity:0.9;
+    }
+
+    .links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 12px;
+      margin-top:14px;
+    }
+
+    .links a{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border:1.5px solid #0b0b0b;
+      border-radius:999px;
+      text-decoration:none;
+      color:#0b0b0b;
+      font-size:15px;
+      font-weight:500;
+      letter-spacing:-0.01em;
+      transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        background-color 140ms ease;
+      background:linear-gradient(145deg, #f9f9f9, #e8e8e8);
+      box-shadow:0 6px 18px rgba(0,0,0,0.14);
+    }
+
+    .links a:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 26px rgba(0,0,0,0.18);
+      background:#fff;
+    }
+
+    .videoBlock{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      background:linear-gradient(155deg, #fafafa, #e8e8e8);
+      border-radius:14px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.14);
+      padding:10px;
+      max-width:260px;
+      margin-top:8px;
+    }
+
+    .videoMeta{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      font-weight:700;
+      letter-spacing:-0.01em;
+    }
+
+    .videoMeta .tags{
+      font-size:13px;
+      font-weight:500;
+      letter-spacing:0.02em;
+      opacity:0.85;
+    }
+
+    .videoThumb{
+      position:relative;
+      width:100%;
+      aspect-ratio:16/9;
+      border-radius:8px;
+      overflow:hidden;
+      border:1px solid #0b0b0b;
+      box-shadow:0 8px 18px rgba(0,0,0,0.12);
+      background:#111;
+      isolation:isolate;
+    }
+
+    .videoThumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter:saturate(0.92);
+    }
+
+    .videoThumb .play{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(120deg, rgba(0,0,0,0.36), rgba(0,0,0,0.12));
+      color:#f4f4f4;
+      font-size:26px;
+      font-weight:700;
+      letter-spacing:0.04em;
+      text-decoration:none;
+      transition:background 160ms ease, transform 160ms ease;
+    }
+
+    .videoThumb .play::before{
+      content:"▶";
+      display:inline-block;
+      margin-right:8px;
+      font-size:22px;
+    }
+
+    .videoThumb .play:hover{
+      background:linear-gradient(120deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
+      transform:translateY(-1px);
+    }
+
+    /* BANNER */
+    .divider{
+      height:1px;
+      background:#7c7c7c;
+    }
+
+    .ticker{
+      height:var(--banner-h);
+      border-top:1px solid #222;
+      background:#f4f4f4;
+      display:flex;
+      align-items:center;
+      overflow:hidden;
+    }
+
+    body.music-open .ticker{ background:#1f4fff; }
+    body.video-open .ticker{ background:#7b4bff; }
+    body.research-open .ticker{ background:#ff6f61; }
+    body.extra-open .ticker{ background:#ff2f2f; }
+
+    /* colored squares for active state */
+    body.music-open .menu li.active .sq{ background:#1f4fff; }
+    body.video-open .menu li.active .sq{ background:#7b4bff; }
+    body.research-open .menu li.active .sq{ background:#ff6f61; }
+    body.extra-open .menu li.active .sq{ background:#ff2f2f; }
+
+    .ascii{
+      white-space:pre;
+      width:100%;
+      padding:0 var(--banner-pad);
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size:var(--ascii-size);
+      font-weight:800;
+      letter-spacing:0.02em;
+      line-height:1;
+
+      color:transparent;
+      -webkit-text-stroke:var(--stroke) #0b0b0b;
+
+      user-select:none;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .panel{ transition:none; }
+    }
+
+    @media (max-width: 640px){
+      .panel p{
+        font-size:15px;
+        line-height:1.5;
+      }
+    }
+
+    @media (max-width: 780px){
+      .inner{
+        grid-template-columns:minmax(140px, 220px) 1fr;
+        gap:12px;
+        padding:22px 18px 20px;
+      }
+
+      .menu li{
+        margin-bottom:20px;
+      }
+    }
+
+    .noise{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:var(--noise-url);
+      background-size:200px 200px;
+      opacity:0.08;
+      mix-blend-mode:overlay;
+      transform:translate3d(var(--noise-x), var(--noise-y), 0);
+      transition:opacity 160ms ease;
+      z-index:3;
+    }
+
+    body.noise-active .noise{
+      opacity:0.14;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <div class="inner" id="inner">
+      <ul class="menu" id="menu">
+        <li><button data-target="music">music</button><span class="sq"></span></li>
+        <li><button data-target="video">audiovisual</button><span class="sq"></span></li>
+        <li><button data-target="research">research</button><span class="sq"></span></li>
+        <li><button data-target="extra">extra</button><span class="sq"></span></li>
+        <li class="arrow" id="arrow">
+          <span class="bubble star">✦</span>
+          <span class="bubble arr">→</span>
+          <div class="label"></div>
+        </li>
+      </ul>
+
+      <div class="mark">
+        <div class="name">juanavaleria</div>
+        <div class="sub">:jv</div>
+        <img id="mark-svg" class="mark-svg" src="images/hey.svg" alt="mark graphic" loading="lazy" decoding="async">
+      </div>
+
+      <div class="panelArea">
+        <div class="panel" id="panel-music">
+          <p>broken rhythms, textured melodies, intense beats</p>
+          <div class="musicShowcase">
+            <div class="musicGroup">
+              <div class="musicGroupTitle">productions</div>
+              <div class="musicGrid">
+                <a class="musicItem" href="https://3024.bandcamp.com/album/undercurrents-vol-3-2?t=2" target="_blank" rel="noreferrer">
+                  <div class="musicCover"><img src="images/3024.jpg" alt="*tension intensifies* cover" loading="lazy" decoding="async"></div>
+                  <span class="title">
+                    <span class="title-line">*tension intensifies*</span>
+                    <span class="title-label">[3024]</span>
+                  </span>
+                </a>
+                <a class="musicItem" href="https://rutamp3.bandcamp.com/track/worm-regards" target="_blank" rel="noreferrer">
+                  <div class="musicCover"><img src="images/RUTA0.jpg" alt="Worm Regards cover" loading="lazy" decoding="async"></div>
+                  <span class="title">
+                    <span class="title-line">Worm Regards</span>
+                    <span class="title-label">[RUTA]</span>
+                  </span>
+                </a>
+                <a class="musicItem" href="https://rutamp3.bandcamp.com/track/barranquillo" target="_blank" rel="noreferrer">
+                  <div class="musicCover"><img src="images/RUTA1.jpg" alt="Barranquillo cover" loading="lazy" decoding="async"></div>
+                  <span class="title">
+                    <span class="title-line">Barranquillo</span>
+                    <span class="title-label">[RUTA]</span>
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            <div class="musicGroup">
+              <div class="musicGroupTitle">mixes</div>
+              <div class="musicGrid">
+                <a class="musicItem" href="https://on.soundcloud.com/pmpQUTMQrANli2qVlV" target="_blank" rel="noreferrer">
+                  <div class="musicCover"><img src="images/mix1.png" alt="Piñata Radio cover" loading="lazy" decoding="async"></div>
+                  <span class="title">
+                    <span class="title-line">Piñata Radio</span>
+                    <span class="title-label">Montpellier</span>
+                  </span>
+                </a>
+                <a class="musicItem" href="https://on.soundcloud.com/yVuyMBJBWfWujnHtIJs" target="_blank" rel="noreferrer">
+                  <div class="musicCover"><img src="images/MIX2.png" alt="Refuge Radio cover" loading="lazy" decoding="async"></div>
+                  <span class="title">
+                    <span class="title-line">Refuge Radio</span>
+                    <span class="title-label">Berlín</span>
+                  </span>
+                </a>
+                <a class="musicItem" href="https://on.soundcloud.com/a6oSp" target="_blank" rel="noreferrer">
+                  <div class="musicCover"><img src="images/mix3.png" alt="SYLPCAST 18 cover" loading="lazy" decoding="async"></div>
+                  <span class="title">
+                    <span class="title-line">SYLPCAST 18</span>
+                    <span class="title-label">Freiburg</span>
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="panel-video">
+          <p>an exploration of sound driven audiovisual systems</p>
+          <div class="videoBlock">
+            <a class="videoThumb" href="https://youtu.be/vbzN0xoB_1I?si=Uo5_6H0L5_ujFaUP" target="_blank" rel="noreferrer">
+              <img src="https://i.ytimg.com/vi/vbzN0xoB_1I/hqdefault.jpg" alt="Audio reactive video thumbnail" loading="lazy" decoding="async">
+              <span class="play">Watch</span>
+            </a>
+            <div class="videoMeta">
+              <span>audio-reactive, touchdesigner</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel" id="panel-research">
+          <p>from robotics research, an exploration of technology, music, and sound driven human interaction</p>
+          <div class="paperLinks">
+            <a class="paperCard" href="https://example.com/paper-01" target="_blank" rel="noreferrer">
+              <span class="title">Panoptic-depth forecasting</span>
+              <span class="meta">ICRA · 2025</span>
+            </a>
+            <a class="paperCard" href="https://example.com/paper-02" target="_blank" rel="noreferrer">
+              <span class="title">Fairness and bias in robot learning</span>
+              <span class="meta">Proceedings of the IEEE · 2024</span>
+            </a>
+            <a class="paperCard" href="https://example.com/paper-03" target="_blank" rel="noreferrer">
+              <span class="title">From learning to relearning: A framework for diminishing bias in social robot navigation</span>
+              <span class="meta">Frontiers in Robotics and AI · 2021</span>
+            </a>
+          </div>
+        </div>
+        <div class="panel" id="panel-extra">
+          <p>from Manizales, Colombia - in Berlin, Germany</p>
+          <div class="links">
+            <a href="https://juanavaleria.bandcamp.com" target="_blank" rel="noreferrer">bandcamp</a>
+            <a href="https://soundcloud.com/juanavaleria" target="_blank" rel="noreferrer">soundcloud</a>
+            <a href="https://instagram.com/juana.valeria" target="_blank" rel="noreferrer">instagram</a>
+            <a href="https://ra.co/dj/juanavaleria" target="_blank" rel="noreferrer">ra</a>
+            <a href="https://scholar.google.com/citations?user=VtbaGhIAAAAJ&hl=en&oi=ao" target="_blank" rel="noreferrer">google scholar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="ticker"><pre class="ascii" id="ascii"></pre></div>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      /* SECTION TOGGLE */
+      const inner = document.getElementById("inner");
+      const menu = document.getElementById("menu");
+      const buttons = menu.querySelectorAll("button[data-target]");
+      const listItems = Array.from(menu.querySelectorAll("li"));
+      const arrow = document.getElementById("arrow");
+      const card = document.querySelector(".card");
+      const mark = document.querySelector(".mark");
+      const markSvg = document.getElementById("mark-svg");
+
+      const panels = {
+        music: document.getElementById("panel-music"),
+        video: document.getElementById("panel-video"),
+        research: document.getElementById("panel-research"),
+        extra: document.getElementById("panel-extra")
+      };
+
+      let active = null;
+
+      function openPanel(key, sourceBtn){
+        const li = sourceBtn ? sourceBtn.closest("li") : null;
+        const isSame = active === key;
+
+        Object.values(panels).forEach(p => p.classList.remove("open"));
+        listItems.forEach(item => item.classList.remove("active"));
+
+        if(isSame){
+          inner.classList.remove("hasOpen");
+          arrow.classList.remove("active");
+          bodyEl.classList.remove("music-open","video-open","research-open","extra-open");
+          active = null;
+          return;
+        }
+
+        panels[key].classList.add("open");
+        if(li) li.classList.add("active");
+        active = key;
+
+        inner.classList.add("hasOpen");
+        arrow.classList.add("active");
+
+        bodyEl.classList.toggle("music-open", key === "music");
+        bodyEl.classList.toggle("video-open", key === "video");
+        bodyEl.classList.toggle("research-open", key === "research");
+        bodyEl.classList.toggle("extra-open", key === "extra");
+      }
+
+      buttons.forEach(btn =>
+        btn.addEventListener("click", () => openPanel(btn.dataset.target, btn))
+      );
+
+      /* MARK SVG TRIGGER */
+      function showMarkSvg(){
+        if(markSvg){
+          markSvg.style.display = "block";
+          mark.classList.add("show-svg");
+        }
+      }
+      function hideMarkSvg(){
+        if(markSvg){
+          markSvg.style.display = "none";
+          mark.classList.remove("show-svg");
+        }
+      }
+
+      function bindPress(el){
+        if(!el) return;
+        el.addEventListener("mousedown", showMarkSvg);
+        el.addEventListener("mouseup", hideMarkSvg);
+        el.addEventListener("mouseleave", hideMarkSvg);
+        el.addEventListener("touchstart", showMarkSvg, {passive:true});
+        el.addEventListener("touchend", hideMarkSvg);
+        el.addEventListener("touchcancel", hideMarkSvg);
+        el.addEventListener("keydown", showMarkSvg);
+        el.addEventListener("keyup", hideMarkSvg);
+        el.addEventListener("blur", hideMarkSvg);
+      }
+
+      bindPress(mark);
+      bindPress(arrow);
+
+      /* ETHEREAL ASCII BANNER */
+      const ascii = document.getElementById("ascii");
+      const ticker = document.querySelector(".ticker");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const bodyEl = document.body;
+
+      const glyphs = [" ","·",":","∙","˙","⸱"];
+      const capL = "≫";
+      const capR = "≪";
+
+      let cols = 60;
+      let t = 0;
+      let speed = -0.0004;
+      let targetSpeed = -0.0004;
+
+      function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+      function computeCols(){
+        const cs = getComputedStyle(ascii);
+        const px = parseFloat(cs.fontSize) || 24;
+        const charW = px * 0.62;
+        const w = ticker.clientWidth -
+          (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight));
+        cols = Math.max(28, Math.floor(w / charW) - 6);
+      }
+
+      function field(x, tt){
+        const a = Math.sin(x * 0.22 + tt * 1.0);
+        const b = Math.sin(x * 0.08 - tt * 0.72 + Math.sin(tt * 0.33) * 0.6);
+        const c = Math.cos(x * 0.04 + tt * 0.18);
+        const v = 0.55*a + 0.35*b + 0.22*c;
+        return clamp01((v + 1.2) / 2.4);
+      }
+
+      function makeLine(tt, intensity){
+        const arr = new Array(cols);
+        for(let i = 0; i < cols; i++){
+          const v = clamp01(field(i, tt) * intensity);
+          const idx = Math.min(glyphs.length - 1, Math.floor(v * glyphs.length));
+          arr[i] = glyphs[idx];
+        }
+        return capL + "  " + arr.join("") + "  " + capR;
+      }
+
+      function render(){
+        const paused = inner.classList.contains("hasOpen");
+        speed += (targetSpeed - speed) * 0.06;
+
+        const breath = 0.92 + 0.10 * (0.5 + 0.5 * Math.sin(t * 0.25));
+        ascii.textContent = makeLine(t, breath);
+
+        if(!paused) t += speed * 60;
+      }
+
+      computeCols();
+      window.addEventListener("resize", () => { computeCols(); render(); });
+
+      menu.addEventListener("mouseenter", () => { targetSpeed = -0.002; });
+      menu.addEventListener("mouseleave", () => { targetSpeed = -0.0004; });
+
+      render();
+      if(!reduceMotion){
+        setInterval(render, 33);
+      }
+
+      /* REACTIVE NOISE BACKGROUND */
+      const noise = document.createElement("div");
+      noise.className = "noise";
+      document.body.appendChild(noise);
+
+      function makeNoiseDataURL(){
+        const size = 140;
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const img = ctx.createImageData(size, size);
+        for(let i = 0; i < img.data.length; i += 4){
+          const v = Math.random() * 255;
+          img.data[i] = v;
+          img.data[i+1] = v;
+          img.data[i+2] = v;
+          img.data[i+3] = 45; // slightly higher alpha
+        }
+        ctx.putImageData(img, 0, 0);
+        return canvas.toDataURL();
+      }
+
+      document.documentElement.style.setProperty("--noise-url", `url('${makeNoiseDataURL()}')`);
+
+      let noiseActive = false;
+      const setNoiseActive = (flag) => {
+        if(noiseActive === flag) return;
+        noiseActive = flag;
+        document.body.classList.toggle("noise-active", flag);
+        if(!flag){
+          noise.style.setProperty("--noise-x", "0px");
+          noise.style.setProperty("--noise-y", "0px");
+        }
+      };
+
+      function updateNoise(e){
+        const rect = card.getBoundingClientRect();
+        const inside =
+          e.clientX >= rect.left && e.clientX <= rect.right &&
+          e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+        setNoiseActive(!inside);
+        if(!noiseActive) return;
+
+        const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.08;
+        const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.08;
+        noise.style.setProperty("--noise-x", `${dx}px`);
+        noise.style.setProperty("--noise-y", `${dy}px`);
+      }
+
+      document.addEventListener("mousemove", updateNoise);
+
+      /* GLASS PANE BACKGROUND */
+
+    });
+  </script>
+</body>
+</html>
