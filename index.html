@@ -584,12 +584,13 @@
 
     @media (max-width: 640px){
       .card{
+        width:min(1020px, 96vw);
         height:clamp(520px, 88vh, 680px);
       }
 
       .panel p{
-        font-size:15px;
-        line-height:1.5;
+        font-size:14px;
+        line-height:1.4;
       }
 
       .menu button{
@@ -616,8 +617,24 @@
 
       .musicItem .title{
         align-items:flex-start;
+        font-size:11px;
+        line-height:1.2;
+      }
+
+      .paperCard .title{
+        font-size:14px;
+      }
+      .paperCard .meta{
         font-size:12px;
-        line-height:1.25;
+      }
+
+      .links a{
+        font-size:14px;
+        padding:7px 12px;
+      }
+
+      .videoMeta{
+        font-size:14px;
       }
     }
 
