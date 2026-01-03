@@ -178,10 +178,16 @@
       .arrow{
         justify-content:center;
       }
+      .arrow .bubble{
+        right:auto;
+        left:50%;
+        transform:translate(-50%, -50%);
+      }
       .arrow .label{
         right:auto;
         left:50%;
         transform:translate(-50%, -50%);
+        text-align:center;
       }
     }
 
@@ -576,9 +582,37 @@
     }
 
     @media (max-width: 640px){
+      .card{
+        height:clamp(520px, 88vh, 680px);
+      }
+
       .panel p{
         font-size:15px;
         line-height:1.5;
+      }
+
+      .musicGrid{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+      }
+
+      .musicItem{
+        flex-direction:row;
+        align-items:center;
+        justify-content:flex-start;
+        gap:10px;
+      }
+
+      .musicCover{
+        width:36px;
+        height:36px;
+      }
+
+      .musicItem .title{
+        align-items:flex-start;
+        font-size:12px;
+        line-height:1.25;
       }
     }
 
