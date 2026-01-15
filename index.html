@@ -474,8 +474,14 @@
       border-radius:14px;
       box-shadow:0 6px 18px rgba(0,0,0,0.14);
       padding:10px;
-      max-width:260px;
-      margin-top:8px;
+      width:100%;
+    }
+
+    .videoGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:10px;
     }
 
     .videoMeta{
@@ -644,6 +650,10 @@
       .videoMeta{
         font-size:14px;
       }
+
+      .videoGrid{
+        grid-template-columns:1fr;
+      }
     }
 
     @media (max-width: 780px){
@@ -657,6 +667,7 @@
         margin-bottom:20px;
       }
     }
+
 
     .noise{
       position:fixed;
@@ -760,13 +771,24 @@
         </div>
         <div class="panel" id="panel-video">
           <p>exploring sound driven audiovisual systems</p>
-          <div class="videoBlock">
-            <a class="videoThumb" href="https://youtu.be/vbzN0xoB_1I?si=Uo5_6H0L5_ujFaUP" target="_blank" rel="noreferrer">
-              <img src="https://i.ytimg.com/vi/vbzN0xoB_1I/hqdefault.jpg" alt="Audio reactive video thumbnail" loading="lazy" decoding="async">
-              <span class="play">Watch</span>
-            </a>
-            <div class="videoMeta">
-              <span>audio-reactive, touchdesigner</span>
+          <div class="videoGrid">
+            <div class="videoBlock">
+              <a class="videoThumb" href="https://youtube.com/shorts/V6_h3XPYt-A?si=zDxm9jsghmh7-uD4" target="_blank" rel="noreferrer">
+                <img src="https://i.ytimg.com/vi/V6_h3XPYt-A/hqdefault.jpg" alt="Audiovisual shorts video thumbnail" loading="lazy" decoding="async">
+                <span class="play">Watch</span>
+              </a>
+              <div class="videoMeta">
+                <span>audio-reactive, touchdesigner</span>
+              </div>
+            </div>
+            <div class="videoBlock">
+              <a class="videoThumb" href="https://youtu.be/vbzN0xoB_1I?si=Uo5_6H0L5_ujFaUP" target="_blank" rel="noreferrer">
+                <img src="https://i.ytimg.com/vi/vbzN0xoB_1I/hqdefault.jpg" alt="Audio reactive video thumbnail" loading="lazy" decoding="async">
+                <span class="play">Watch</span>
+              </a>
+              <div class="videoMeta">
+                <span>audio-reactive, touchdesigner</span>
+              </div>
             </div>
           </div>
         </div>
